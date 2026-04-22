@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Sharing App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>🍳 Recipe Sharing App</h1>
+            <p>Discover and share amazing recipes</p>
+            <a href="add.html" class="btn-add">+ Add New Recipe</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h2>All Recipes</h2>
+            <div id="recipes-container">
+                <p class="loading">Loading recipes...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Recipe App — DevOps Project</p>
+    </footer>
+
+    <script>
+        const API_URL = '/api/recipes';
+
+        async function loadRecipes() {
+            try {
+                const response = await fetch(API_URL);
+                const recipes = await response.json();
+                displayRecipes(recipes);
+            } catch (error) {
+                document.getElementById('recipes-container').innerHTML =
+                    '<p class="error">❌ Could not load recipes. Is the server running?</p>';
+            }
+        }
+
+        function displayRecipes(recipes) {
+            const container = document.getElementById('recipes-container');
+            if (recipes.length === 0) {
+                container.innerHTML = '<p class="empty">No recipes yet. Be the first to add one!</p>';
+                return;
+            }
+
+            container.innerHTML = recipes.map(recipe => `
+                <div class="recipe-card">
+                    <h3>${recipe.title}</h3>
+                    <div class="section">
+                        <h4>🥕 Ingredients</h4>
+                        <p>${recipe.ingredients.replace(/\n/g, '<br>')}</p>
+                    </div>
+                    <div class="section">
+                        <h4>📝 Instructions</h4>
+                        <p>${recipe.instructions.replace(/\n/g, '<br>')}</p>
+                    </div>
+                    <div class="card-footer">
+                        <span class="date">Added: ${new Date(recipe.createdAt).toLocaleDateString()}</span>
+                        <button onclick="deleteRecipe('${recipe._id}')" class="btn-delete">🗑 Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function deleteRecipe(id) {
+            if (!confirm('Delete this recipe?')) return;
+            try {
+                await fetch(`/api/recipes/${id}`, { method: 'DELETE' });
+                loadRecipes();
+            } catch (error) {
+                alert('Error deleting recipe');
+            }
+        }
+
+        // Load recipes when page opens
+        loadRecipes();
+    </script>
+</body>
+</html>

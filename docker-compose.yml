@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    container_name: recipe-app
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      PORT: "5000"
+      DB_PATH: "/app/backend/data/recipes.db"
+    volumes:
+      # This saves SQLite data even if container restarts
+      - recipe_data:/app/backend/data
+
+volumes:
+  recipe_data:

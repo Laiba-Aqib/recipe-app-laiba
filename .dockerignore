@@ -1,0 +1,11 @@
+node_modules
+backend/node_modules
+backend/data
+backend/.env
+.env
+.git
+.gitignore
+*.log
+*.md
+.DS_Store
+Thumbs.db

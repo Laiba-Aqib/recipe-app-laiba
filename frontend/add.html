@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Recipe</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>🍳 Recipe Sharing App</h1>
+            <a href="index.html" class="btn-add">← Back to Recipes</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <h2>Add a New Recipe</h2>
+            <div id="message"></div>
+            <div class="form-card">
+                <div class="form-group">
+                    <label for="title">Recipe Title *</label>
+                    <input type="text" id="title" placeholder="e.g., Spaghetti Carbonara" required>
+                </div>
+                <div class="form-group">
+                    <label for="ingredients">Ingredients *</label>
+                    <textarea id="ingredients" rows="5"
+                        placeholder="e.g., 200g pasta&#10;2 eggs&#10;100g cheese"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="instructions">Instructions *</label>
+                    <textarea id="instructions" rows="6"
+                        placeholder="e.g., 1. Boil pasta&#10;2. Mix eggs and cheese&#10;3. Combine"></textarea>
+                </div>
+                <button onclick="addRecipe()" class="btn-submit">Submit Recipe</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function addRecipe() {
+            const title = document.getElementById('title').value.trim();
+            const ingredients = document.getElementById('ingredients').value.trim();
+            const instructions = document.getElementById('instructions').value.trim();
+            const msgDiv = document.getElementById('message');
+
+            if (!title || !ingredients || !instructions) {
+                msgDiv.innerHTML = '<p class="error">❌ All fields are required!</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/recipes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, ingredients, instructions })
+                });
+
+                if (response.ok) {
+                    msgDiv.innerHTML = '<p class="success">✅ Recipe added successfully!</p>';
+                    document.getElementById('title').value = '';
+                    document.getElementById('ingredients').value = '';
+                    document.getElementById('instructions').value = '';
+                    setTimeout(() => window.location.href = 'index.html', 1500);
+                }
+            } catch (error) {
+                msgDiv.innerHTML = '<p class="error">❌ Error adding recipe. Try again.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
